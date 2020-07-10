@@ -21,4 +21,4 @@ I'm Peter, a software engineer of Microsoft
 - 🌱 I’m currently learning Assembly
 - 👯 I’m looking to collaborate on FateIndex
 - 📫 How to reach me: fateIndex@outlook.com
-- ⚡ Fun fact: Learning is the best way to kill time!a
+- ⚡ Fun fact: Learning is the best way to kill time!
