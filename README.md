@@ -23,4 +23,4 @@ I'm Peter, a software engineer of Microsoft
 - 📫 How to reach me: fateIndex@outlook.com
 - ⚡ Fun fact: Learning is the best way to kill time!
 
-![visitors](https://visitor-badge.glitch.me/badge?page_id=Petr-2019.Petr-2019)
+<img align="right" src="https://github-readme-stats.vercel.app/api?username=Petr-2019&show_icons=true&icon_color=0366d6&text_color=24292e&bg_color=ffffff&hide_title=true" />
