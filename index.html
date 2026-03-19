@@ -1,0 +1,918 @@
+<!DOCTYPE html>
+<html lang="en" data-lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Petr Guan — C++ Engineer @ Microsoft Outlook</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Noto+Sans+SC:wght@300;400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-primary: #0a0a0f;
+      --bg-card: #141420;
+      --text-primary: #e8e6f0;
+      --text-secondary: #9590a8;
+      --text-muted: #5c5874;
+      --accent: #6c5ce7;
+      --accent-teal: #00cec9;
+      --border: rgba(108, 92, 231, 0.12);
+      --nav-bg: rgba(10, 10, 15, 0.8);
+      --radius: 12px;
+      --font-display: 'Syne', sans-serif;
+      --font-body: 'Noto Sans SC', sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+
+    @media (prefers-color-scheme: light) {
+      :root:not([data-theme="dark"]) {
+        --bg-primary: #f8f7fc;
+        --bg-card: #ffffff;
+        --text-primary: #1a1a2e;
+        --text-secondary: #555270;
+        --text-muted: #8a86a0;
+        --accent: #5a4bd1;
+        --accent-teal: #0097a7;
+        --border: rgba(90, 75, 209, 0.12);
+        --nav-bg: rgba(248, 247, 252, 0.85);
+      }
+    }
+
+    [data-theme="light"] {
+      --bg-primary: #f8f7fc;
+      --bg-card: #ffffff;
+      --text-primary: #1a1a2e;
+      --text-secondary: #555270;
+      --text-muted: #8a86a0;
+      --accent: #5a4bd1;
+      --accent-teal: #0097a7;
+      --border: rgba(90, 75, 209, 0.12);
+      --nav-bg: rgba(248, 247, 252, 0.85);
+    }
+
+    [data-theme="dark"] {
+      --bg-primary: #0a0a0f;
+      --bg-card: #141420;
+      --text-primary: #e8e6f0;
+      --text-secondary: #9590a8;
+      --text-muted: #5c5874;
+      --accent: #6c5ce7;
+      --accent-teal: #00cec9;
+      --border: rgba(108, 92, 231, 0.12);
+      --nav-bg: rgba(10, 10, 15, 0.8);
+    }
+
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--font-body);
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      line-height: 1.7;
+      overflow-x: hidden;
+    }
+
+    /* ── NAV ── */
+    .nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 1000;
+      padding: 18px 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      backdrop-filter: blur(16px);
+      background: var(--nav-bg);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav__logo {
+      font-family: var(--font-display);
+      font-weight: 800;
+      font-size: 1.4rem;
+      color: var(--text-primary);
+    }
+
+    .nav__links {
+      display: flex;
+      gap: 28px;
+      align-items: center;
+      list-style: none;
+    }
+
+    .nav__link {
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-size: 0.88rem;
+      font-weight: 500;
+      font-family: var(--font-display);
+      transition: color 0.3s;
+    }
+
+    .nav__link:hover { color: var(--text-primary); }
+
+    .lang-toggle {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      color: var(--text-secondary);
+      padding: 5px 14px;
+      border-radius: 20px;
+      cursor: pointer;
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      transition: color 0.3s, border-color 0.3s;
+    }
+
+    .lang-toggle:hover { border-color: var(--accent); color: var(--text-primary); }
+
+    .theme-toggle {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      color: var(--text-secondary);
+      padding: 5px 12px;
+      border-radius: 20px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      line-height: 1;
+      transition: color 0.3s, border-color 0.3s;
+    }
+
+    .theme-toggle:hover { border-color: var(--accent); color: var(--text-primary); }
+
+    /* ── SECTIONS ── */
+    section {
+      position: relative;
+      padding: 100px 40px;
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
+    .section-label {
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      color: var(--accent-teal);
+      letter-spacing: 2px;
+      margin-bottom: 12px;
+    }
+
+    .section-title {
+      font-family: var(--font-display);
+      font-size: clamp(1.8rem, 3.5vw, 2.6rem);
+      font-weight: 700;
+      line-height: 1.3;
+      margin-bottom: 40px;
+      letter-spacing: -0.02em;
+    }
+
+    .accent { color: var(--accent); }
+
+    /* ── REVEAL ── */
+    .reveal {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+
+    .stagger-1 { transition-delay: 0.05s; }
+    .stagger-2 { transition-delay: 0.1s; }
+    .stagger-3 { transition-delay: 0.15s; }
+    .stagger-4 { transition-delay: 0.2s; }
+    .stagger-5 { transition-delay: 0.25s; }
+    .stagger-6 { transition-delay: 0.3s; }
+
+    /* ── HERO ── */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding-top: 80px;
+    }
+
+    .hero__avatar {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 3px solid var(--border);
+      margin-bottom: 24px;
+      animation: fadeIn 0.6s both;
+    }
+
+    .hero__greeting {
+      font-family: var(--font-mono);
+      font-size: 1rem;
+      color: var(--accent-teal);
+      margin-bottom: 20px;
+      animation: fadeIn 0.6s 0.1s both;
+    }
+
+    .hero__name {
+      font-family: var(--font-display);
+      font-size: clamp(3rem, 7vw, 5.5rem);
+      font-weight: 800;
+      line-height: 1.1;
+      letter-spacing: -0.03em;
+      margin-bottom: 12px;
+      color: var(--text-primary);
+      animation: fadeIn 0.6s 0.2s both;
+    }
+
+    .hero__role {
+      font-family: var(--font-display);
+      font-size: clamp(1.2rem, 2.5vw, 1.8rem);
+      font-weight: 600;
+      color: var(--accent);
+      margin-bottom: 20px;
+      animation: fadeIn 0.6s 0.3s both;
+    }
+
+    .hero__desc {
+      font-size: 1.05rem;
+      color: var(--text-secondary);
+      max-width: 540px;
+      margin-bottom: 36px;
+      animation: fadeIn 0.6s 0.4s both;
+    }
+
+    .hero__cta {
+      display: flex;
+      gap: 14px;
+      animation: fadeIn 0.6s 0.5s both;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(16px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 12px 28px;
+      border-radius: 8px;
+      font-family: var(--font-display);
+      font-size: 0.9rem;
+      font-weight: 600;
+      text-decoration: none;
+      transition: transform 0.2s, box-shadow 0.2s;
+      cursor: pointer;
+      border: none;
+    }
+
+    .btn:hover { transform: translateY(-1px); }
+
+    .btn--primary {
+      background: var(--accent);
+      color: #fff;
+    }
+
+    .btn--primary:hover { box-shadow: 0 4px 20px rgba(108, 92, 231, 0.35); }
+
+    .btn--ghost {
+      background: transparent;
+      color: var(--text-primary);
+      border: 1px solid var(--border);
+    }
+
+    .btn--ghost:hover { border-color: var(--accent); }
+
+    /* ── ABOUT ── */
+    .about__content {
+      display: grid;
+      grid-template-columns: 1.2fr 1fr;
+      gap: 48px;
+      align-items: start;
+    }
+
+    .about__text p {
+      color: var(--text-secondary);
+      margin-bottom: 16px;
+      font-size: 1rem;
+    }
+
+    .about__stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    .stat-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+      text-align: center;
+      transition: border-color 0.3s;
+    }
+
+    .stat-card:hover { border-color: rgba(108, 92, 231, 0.3); }
+
+    @media (prefers-color-scheme: light) {
+      :root:not([data-theme="dark"]) .stat-card,
+      :root:not([data-theme="dark"]) .tech-item,
+      :root:not([data-theme="dark"]) .timeline-item__card,
+      :root:not([data-theme="dark"]) .project-card,
+      :root:not([data-theme="dark"]) .contact-link,
+      :root:not([data-theme="dark"]) .oss-card {
+        box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+      }
+    }
+
+    [data-theme="light"] .stat-card,
+    [data-theme="light"] .tech-item,
+    [data-theme="light"] .timeline-item__card,
+    [data-theme="light"] .project-card,
+    [data-theme="light"] .contact-link,
+    [data-theme="light"] .oss-card {
+      box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+    }
+
+    .stat-card__number {
+      font-family: var(--font-display);
+      font-size: 2rem;
+      font-weight: 800;
+      color: var(--accent);
+    }
+
+    .stat-card__label {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    /* ── TECH ── */
+    .tech-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+      gap: 12px;
+    }
+
+    .tech-item {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px 12px;
+      text-align: center;
+      transition: border-color 0.3s, transform 0.2s;
+    }
+
+    .tech-item:hover { border-color: rgba(108, 92, 231, 0.3); transform: translateY(-2px); }
+
+    .tech-item__icon { font-size: 1.6rem; margin-bottom: 6px; display: block; }
+
+    .tech-item__name {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+    }
+
+    /* ── TIMELINE ── */
+    .timeline { padding-left: 48px; position: relative; }
+
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: 16px; top: 0; bottom: 0;
+      width: 2px;
+      background: linear-gradient(to bottom, var(--accent), var(--accent-teal));
+      opacity: 0.3;
+    }
+
+    .timeline-item { position: relative; margin-bottom: 40px; }
+
+    .timeline-item__dot {
+      position: absolute;
+      left: -40px; top: 6px;
+      width: 12px; height: 12px;
+      border-radius: 50%;
+      background: var(--accent);
+    }
+
+    .timeline-item__date {
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      color: var(--accent-teal);
+      margin-bottom: 8px;
+    }
+
+    .timeline-item__card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+      transition: border-color 0.3s;
+    }
+
+    .timeline-item__card:hover { border-color: rgba(108, 92, 231, 0.3); }
+
+    .timeline-item__role {
+      font-family: var(--font-display);
+      font-size: 1.2rem;
+      font-weight: 700;
+      margin-bottom: 2px;
+    }
+
+    .timeline-item__company {
+      color: var(--accent);
+      font-weight: 500;
+      margin-bottom: 10px;
+      font-size: 0.95rem;
+    }
+
+    .timeline-item__desc {
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+    }
+
+    .timeline-item__tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 14px;
+    }
+
+    .tag {
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      padding: 3px 10px;
+      border-radius: 6px;
+      background: rgba(108, 92, 231, 0.08);
+      color: var(--accent);
+      border: 1px solid rgba(108, 92, 231, 0.15);
+    }
+
+    /* ── PROJECTS ── */
+    .projects-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+    }
+
+    .project-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px;
+      transition: border-color 0.3s, transform 0.2s;
+      text-decoration: none;
+      color: inherit;
+      display: block;
+    }
+
+    .project-card:hover { border-color: rgba(108, 92, 231, 0.3); transform: translateY(-3px); }
+
+    .project-card__icon {
+      font-size: 1.5rem;
+      margin-bottom: 14px;
+      display: block;
+    }
+
+    .project-card__icon-img {
+      width: 56px;
+      height: 56px;
+      border-radius: 12px;
+      margin-bottom: 14px;
+      display: block;
+    }
+
+    .project-card__title {
+      font-family: var(--font-display);
+      font-size: 1.15rem;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+
+    .project-card__desc {
+      color: var(--text-secondary);
+      font-size: 0.88rem;
+      margin-bottom: 16px;
+    }
+
+    .project-card__tech { display: flex; flex-wrap: wrap; gap: 6px; }
+
+    .project-card__link {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      color: var(--accent-teal);
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      margin-top: 14px;
+      text-decoration: none;
+    }
+
+    /* ── OPEN SOURCE ── */
+    .oss-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+
+    .oss-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+      transition: border-color 0.3s, transform 0.2s;
+      text-decoration: none;
+      color: inherit;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .oss-card:hover { border-color: rgba(108, 92, 231, 0.3); transform: translateY(-2px); }
+
+    .oss-card__org {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      color: var(--accent-teal);
+      margin-bottom: 6px;
+    }
+
+    .oss-card__name {
+      font-family: var(--font-display);
+      font-size: 1.05rem;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+
+    .oss-card__desc {
+      color: var(--text-secondary);
+      font-size: 0.85rem;
+      flex: 1;
+      margin-bottom: 14px;
+    }
+
+    .oss-card__meta {
+      display: flex;
+      gap: 16px;
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      color: var(--text-muted);
+    }
+
+    @media (max-width: 768px) {
+      .oss-grid { grid-template-columns: 1fr; }
+    }
+
+    /* ── CONTACT ── */
+    .contact { text-align: center; }
+
+    .contact__text {
+      color: var(--text-secondary);
+      font-size: 1rem;
+      max-width: 520px;
+      margin: 0 auto 40px;
+    }
+
+    .contact__links {
+      display: flex;
+      justify-content: center;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .contact-link {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 14px 24px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      color: var(--text-primary);
+      text-decoration: none;
+      font-family: var(--font-display);
+      font-weight: 600;
+      font-size: 0.9rem;
+      transition: border-color 0.3s, transform 0.2s;
+    }
+
+    .contact-link:hover { border-color: rgba(108, 92, 231, 0.3); transform: translateY(-2px); }
+
+    /* ── FOOTER ── */
+    .footer {
+      text-align: center;
+      padding: 40px;
+      color: var(--text-muted);
+      font-size: 0.8rem;
+      font-family: var(--font-mono);
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 768px) {
+      section { padding: 70px 20px; }
+      .nav { padding: 14px 20px; }
+      .nav__links { display: none; }
+      .about__content { grid-template-columns: 1fr; }
+      .projects-grid { grid-template-columns: 1fr; }
+      .hero__cta { flex-direction: column; align-items: flex-start; }
+      .contact__links { flex-direction: column; align-items: center; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navigation -->
+  <nav class="nav">
+    <div class="nav__logo">Petr.</div>
+    <ul class="nav__links">
+      <li><a href="#about" class="nav__link" data-en="About" data-zh="关于">About</a></li>
+      <li><a href="#tech" class="nav__link" data-en="Tech" data-zh="技术">Tech</a></li>
+      <li><a href="#experience" class="nav__link" data-en="Experience" data-zh="经历">Experience</a></li>
+      <li><a href="#opensource" class="nav__link" data-en="Open Source" data-zh="开源">Open Source</a></li>
+      <li><a href="#projects" class="nav__link" data-en="Projects" data-zh="项目">Projects</a></li>
+      <li><a href="#contact" class="nav__link" data-en="Contact" data-zh="联系">Contact</a></li>
+    </ul>
+    <div style="display:flex;gap:8px;align-items:center;">
+      <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" aria-label="Toggle theme">🌙</button>
+      <button class="lang-toggle" onclick="toggleLang()">中文 / EN</button>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <section class="hero">
+    <img class="hero__avatar" src="Selfie.png" alt="Petr Guan">
+    <p class="hero__greeting" data-en="Hello, I'm" data-zh="你好，我是">Hello, I'm</p>
+    <h1 class="hero__name">Petr Guan</h1>
+    <p class="hero__role" data-en="C++ Engineer @ Microsoft Outlook" data-zh="微软 Outlook · C++ 工程师">C++ Engineer @ Microsoft Outlook</p>
+    <p class="hero__desc" data-en="7 years at Microsoft building Outlook Mobile. Passionate about high-performance native apps, clean architecture, and crafting tools that people use every day." data-zh="在微软深耕 7 年，构建 Outlook Mobile。热衷于高性能原生应用、整洁架构，以及打造人们每天都在使用的工具。">7 years at Microsoft building Outlook Mobile. Passionate about high-performance native apps, clean architecture, and crafting tools that people use every day.</p>
+    <div class="hero__cta">
+      <a href="#projects" class="btn btn--primary" data-en="View My Work" data-zh="查看作品">View My Work</a>
+      <a href="#contact" class="btn btn--ghost" data-en="Get in Touch" data-zh="联系我">Get in Touch</a>
+    </div>
+  </section>
+
+  <!-- About -->
+  <section id="about">
+    <div class="section-label reveal" data-en="About" data-zh="关于我">About</div>
+    <h2 class="section-title reveal stagger-1" data-en="Passionate about building <span class='accent'>elegant solutions</span>" data-zh="热衷于构建<span class='accent'>优雅的解决方案</span>">Passionate about building <span class="accent">elegant solutions</span></h2>
+    <div class="about__content">
+      <div class="about__text reveal stagger-2">
+        <p data-en="I'm a C++ engineer at Microsoft with 7 years of experience building Outlook Mobile — the email client used by millions every day. I specialize in high-performance native development and scalable architecture." data-zh="我是微软的一名 C++ 工程师，拥有 7 年经验，负责构建 Outlook Mobile — 每天被数百万人使用的邮件客户端。我专注于高性能原生开发和可扩展架构。">I'm a C++ engineer at Microsoft with 7 years of experience building Outlook Mobile — the email client used by millions every day. I specialize in high-performance native development and scalable architecture.</p>
+        <p data-en="Outside of work, I build indie apps — most recently Bebilog, a privacy-first baby tracker for iOS. I'm also passionate about compilers, design patterns, and exploring the fundamentals of computer science." data-zh="工作之余，我开发独立应用 — 最近上线了 Bebilog，一款注重隐私的 iOS 宝宝记录工具。我也热衷于编译器、设计模式和计算机科学基础。">Outside of work, I build indie apps — most recently Bebilog, a privacy-first baby tracker for iOS. I'm also passionate about compilers, design patterns, and exploring the fundamentals of computer science.</p>
+      </div>
+      <div class="about__stats">
+        <div class="stat-card reveal stagger-3">
+          <div class="stat-card__number">8+</div>
+          <div class="stat-card__label" data-en="Years Exp." data-zh="年经验">Years Exp.</div>
+        </div>
+        <div class="stat-card reveal stagger-4">
+          <div class="stat-card__number">39</div>
+          <div class="stat-card__label" data-en="GitHub Repos" data-zh="个仓库">GitHub Repos</div>
+        </div>
+        <div class="stat-card reveal stagger-5">
+          <div class="stat-card__number">3</div>
+          <div class="stat-card__label" data-en="Languages" data-zh="门语言">Languages</div>
+        </div>
+        <div class="stat-card reveal stagger-6">
+          <div class="stat-card__number">&infin;</div>
+          <div class="stat-card__label" data-en="Coffee" data-zh="杯咖啡">Coffee</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Tech Stack -->
+  <section id="tech">
+    <div class="section-label reveal" data-en="Tech Stack" data-zh="技术栈">Tech Stack</div>
+    <h2 class="section-title reveal stagger-1" data-en="Tools I work with <span class='accent'>every day</span>" data-zh="我每天使用的<span class='accent'>技术工具</span>">Tools I work with <span class="accent">every day</span></h2>
+    <div class="tech-grid">
+      <div class="tech-item reveal stagger-1"><span class="tech-item__icon">⚙️</span><span class="tech-item__name">C/C++</span></div>
+      <div class="tech-item reveal stagger-2"><span class="tech-item__icon">🍎</span><span class="tech-item__name">Swift</span></div>
+      <div class="tech-item reveal stagger-3"><span class="tech-item__icon">🐍</span><span class="tech-item__name">Python</span></div>
+      <div class="tech-item reveal stagger-1"><span class="tech-item__icon">☕</span><span class="tech-item__name">Java</span></div>
+      <div class="tech-item reveal stagger-2"><span class="tech-item__icon">🟦</span><span class="tech-item__name">Obj-C</span></div>
+      <div class="tech-item reveal stagger-3"><span class="tech-item__icon">📱</span><span class="tech-item__name">SwiftUI</span></div>
+      <div class="tech-item reveal stagger-1"><span class="tech-item__icon">⌚</span><span class="tech-item__name">watchOS</span></div>
+      <div class="tech-item reveal stagger-2"><span class="tech-item__icon">🔀</span><span class="tech-item__name">Git</span></div>
+      <div class="tech-item reveal stagger-3"><span class="tech-item__icon">🛠️</span><span class="tech-item__name">CMake</span></div>
+      <div class="tech-item reveal stagger-1"><span class="tech-item__icon">📧</span><span class="tech-item__name">Outlook</span></div>
+      <div class="tech-item reveal stagger-2"><span class="tech-item__icon">📊</span><span class="tech-item__name">Big Data</span></div>
+      <div class="tech-item reveal stagger-3"><span class="tech-item__icon">🧠</span><span class="tech-item__name">AI/LLM</span></div>
+    </div>
+  </section>
+
+  <!-- Experience -->
+  <section id="experience">
+    <div class="section-label reveal" data-en="Experience" data-zh="工作经历">Experience</div>
+    <h2 class="section-title reveal stagger-1" data-en="Where I've <span class='accent'>made an impact</span>" data-zh="我的<span class='accent'>职业足迹</span>">Where I've <span class="accent">made an impact</span></h2>
+    <div class="timeline">
+      <div class="timeline-item reveal stagger-2">
+        <div class="timeline-item__dot"></div>
+        <span class="timeline-item__date" data-en="2018 — Present · 7 years" data-zh="2018 — 至今 · 7 年">2018 — Present · 7 years</span>
+        <div class="timeline-item__card">
+          <h3 class="timeline-item__role" data-en="C++ Software Engineer" data-zh="C++ 软件工程师">C++ Software Engineer</h3>
+          <p class="timeline-item__company">Microsoft — Outlook Mobile</p>
+          <p class="timeline-item__desc" data-en="Building and maintaining Outlook Mobile, the email client used by millions of users worldwide. Focused on high-performance C++ development, cross-platform architecture, and delivering reliable, polished experiences on iOS and Android." data-zh="构建和维护 Outlook Mobile — 全球数百万用户使用的邮件客户端。专注于高性能 C++ 开发、跨平台架构，以及在 iOS 和 Android 上交付可靠、精致的用户体验。">Building and maintaining Outlook Mobile, the email client used by millions of users worldwide. Focused on high-performance C++ development, cross-platform architecture, and delivering reliable, polished experiences on iOS and Android.</p>
+          <div class="timeline-item__tags">
+            <span class="tag">C++</span>
+            <span class="tag">Objective-C</span>
+            <span class="tag">iOS</span>
+            <span class="tag">Android</span>
+            <span class="tag">Cross-platform</span>
+          </div>
+        </div>
+      </div>
+      <div class="timeline-item reveal stagger-3">
+        <div class="timeline-item__dot"></div>
+        <span class="timeline-item__date" data-en="2016 — 2018 · 1 year" data-zh="2016 — 2018 · 1 年">2016 — 2018 · 1 year</span>
+        <div class="timeline-item__card">
+          <h3 class="timeline-item__role" data-en="Big Data Engineer Intern" data-zh="大数据工程师（实习）">Big Data Engineer Intern</h3>
+          <p class="timeline-item__company">Silicon Studio</p>
+          <p class="timeline-item__desc" data-en="Worked on big data pipelines and analytics infrastructure. Gained hands-on experience with data processing, text retrieval, and search engine technologies." data-zh="参与大数据管道和分析基础设施建设。积累了数据处理、文本检索和搜索引擎技术的实战经验。">Worked on big data pipelines and analytics infrastructure. Gained hands-on experience with data processing, text retrieval, and search engine technologies.</p>
+          <div class="timeline-item__tags">
+            <span class="tag">Big Data</span>
+            <span class="tag">Python</span>
+            <span class="tag">Search</span>
+          </div>
+        </div>
+      </div>
+      <div class="timeline-item reveal stagger-4">
+        <div class="timeline-item__dot"></div>
+        <span class="timeline-item__date" data-en="2011 — 2015" data-zh="2011 — 2015">2011 — 2015</span>
+        <div class="timeline-item__card">
+          <h3 class="timeline-item__role" data-en="Bachelor's Degree" data-zh="本科">Bachelor's Degree</h3>
+          <p class="timeline-item__company" data-en="Nanjing University" data-zh="南京大学">Nanjing University</p>
+          <p class="timeline-item__desc" data-en="Built a strong foundation in computer science fundamentals, algorithms, and systems programming." data-zh="建立了扎实的计算机科学基础，涵盖算法和系统编程。">Built a strong foundation in computer science fundamentals, algorithms, and systems programming.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Open Source -->
+  <section id="opensource">
+    <div class="section-label reveal" data-en="Open Source" data-zh="开源贡献">Open Source</div>
+    <h2 class="section-title reveal stagger-1" data-en="Contributions to <span class='accent'>open source</span>" data-zh="我的<span class='accent'>开源贡献</span>">Contributions to <span class="accent">open source</span></h2>
+    <div class="oss-grid">
+      <a class="oss-card reveal stagger-2" href="https://github.com/swiftlang/swift-tools-support-core" target="_blank">
+        <span class="oss-card__org">swiftlang</span>
+        <h3 class="oss-card__name">swift-tools-support-core</h3>
+        <p class="oss-card__desc" data-en="Common infrastructural code for Swift Package Manager and llbuild. Core utilities powering the Swift build ecosystem." data-zh="Swift Package Manager 和 llbuild 的公共基础设施代码，驱动 Swift 构建生态的核心工具库。">Common infrastructural code for Swift Package Manager and llbuild. Core utilities powering the Swift build ecosystem.</p>
+        <div class="oss-card__meta">
+          <span>Swift</span>
+          <span>&#9733; 431</span>
+        </div>
+      </a>
+      <a class="oss-card reveal stagger-3" href="https://github.com/microsoft/appcenter-sdk-apple" target="_blank">
+        <span class="oss-card__org">microsoft</span>
+        <h3 class="oss-card__name">appcenter-sdk-apple</h3>
+        <p class="oss-card__desc" data-en="App Center SDK for iOS, macOS, and tvOS. Provides analytics, crash reporting, and beta distribution for Apple platforms." data-zh="适用于 iOS、macOS 和 tvOS 的 App Center SDK。提供分析、崩溃报告和 Beta 分发功能。">App Center SDK for iOS, macOS, and tvOS. Provides analytics, crash reporting, and beta distribution for Apple platforms.</p>
+        <div class="oss-card__meta">
+          <span>Objective-C</span>
+          <span>&#9733; 576</span>
+        </div>
+      </a>
+      <a class="oss-card reveal stagger-4" href="https://github.com/microsoft/cpp_client_telemetry" target="_blank">
+        <span class="oss-card__org">microsoft</span>
+        <h3 class="oss-card__name">cpp_client_telemetry</h3>
+        <p class="oss-card__desc" data-en="1DS C/C++ SDK — cross-platform telemetry collection framework used across Microsoft products on Android, iOS, Linux, macOS, and Windows." data-zh="1DS C/C++ SDK — 跨平台遥测收集框架，在 Android、iOS、Linux、macOS 和 Windows 上被微软产品广泛使用。">1DS C/C++ SDK — cross-platform telemetry collection framework used across Microsoft products on Android, iOS, Linux, macOS, and Windows.</p>
+        <div class="oss-card__meta">
+          <span>C</span>
+          <span>&#9733; 99</span>
+        </div>
+      </a>
+    </div>
+  </section>
+
+  <!-- Projects -->
+  <section id="projects">
+    <div class="section-label reveal" data-en="Projects" data-zh="项目展示">Projects</div>
+    <h2 class="section-title reveal stagger-1" data-en="Things I've <span class='accent'>built & shipped</span>" data-zh="我构建和<span class='accent'>交付的项目</span>">Things I've <span class="accent">built & shipped</span></h2>
+    <div class="projects-grid">
+      <div class="project-card reveal stagger-2">
+        <img class="project-card__icon-img" src="Outlook.webp" alt="Outlook Mobile icon">
+        <h3 class="project-card__title">Outlook Mobile</h3>
+        <p class="project-card__desc" data-en="Microsoft's flagship email client for iOS and Android, used by millions daily. I work on the core C++ engine powering cross-platform email, calendar, and search experiences." data-zh="微软旗舰邮件客户端，支持 iOS 和 Android，每日数百万用户使用。我负责驱动跨平台邮件、日历和搜索体验的核心 C++ 引擎。">Microsoft's flagship email client for iOS and Android, used by millions daily. I work on the core C++ engine powering cross-platform email, calendar, and search experiences.</p>
+        <div class="project-card__tech">
+          <span class="tag">C++</span>
+          <span class="tag">Obj-C</span>
+          <span class="tag">iOS</span>
+          <span class="tag">Android</span>
+        </div>
+        <a class="project-card__link" href="https://apps.apple.com/us/app/microsoft-outlook/id951937596" target="_blank">App Store &rarr;</a>
+      </div>
+      <div class="project-card reveal stagger-3">
+        <img class="project-card__icon-img" src="Bebilog.webp" alt="Bebilog icon">
+        <h3 class="project-card__title">Bebilog: Baby Tracker</h3>
+        <p class="project-card__desc" data-en="A privacy-first baby tracking app for iOS &amp; watchOS. Track feeding, sleep, diapers, growth, vaccines, and more — all data stored locally, no cloud, no ads." data-zh="一款注重隐私的宝宝记录应用，支持 iOS 和 watchOS。记录喂养、睡眠、换尿布、发育、疫苗等 — 数据全部本地存储，无云端，无广告。">A privacy-first baby tracking app for iOS &amp; watchOS. Track feeding, sleep, diapers, growth, vaccines, and more — all data stored locally, no cloud, no ads.</p>
+        <div class="project-card__tech">
+          <span class="tag">Swift</span>
+          <span class="tag">SwiftUI</span>
+          <span class="tag">watchOS</span>
+        </div>
+        <a class="project-card__link" href="https://apps.apple.com/us/app/bebilog-baby-tracker/id6759827652" target="_blank">App Store &rarr;</a>
+      </div>
+      <div class="project-card reveal stagger-4">
+        <span class="project-card__icon">📝</span>
+        <h3 class="project-card__title">MarkVerse</h3>
+        <p class="project-card__desc" data-en="An AI-native Markdown content runtime for macOS. Not a text editor — a content flow router that intercepts, renders, and manages Markdown from any source (files, clipboard, drag-drop, system tray)." data-zh="macOS 上的 AI 原生 Markdown 内容运行时。不是文本编辑器 — 而是一个内容流路由器，可以拦截、渲染和管理来自任何来源（文件、剪贴板、拖放、系统托盘）的 Markdown。">An AI-native Markdown content runtime for macOS. Not a text editor — a content flow router that intercepts, renders, and manages Markdown from any source (files, clipboard, drag-drop, system tray).</p>
+        <div class="project-card__tech">
+          <span class="tag">Swift</span>
+          <span class="tag">AppKit</span>
+          <span class="tag">WKWebView</span>
+          <span class="tag">cmark-gfm</span>
+        </div>
+        <span class="project-card__link" style="color: var(--accent);" data-en="In Development" data-zh="开发中">In Development</span>
+      </div>
+      <div class="project-card reveal stagger-5">
+        <span class="project-card__icon">🐾</span>
+        <h3 class="project-card__title" data-en="MuYe Fresh Pet Food" data-zh="沐野鲜食">MuYe Fresh Pet Food</h3>
+        <p class="project-card__desc" data-en="A WeChat Mini Program for fresh pet food e-commerce. Includes customer storefront (browse, order, pay) and merchant dashboard (product management, order processing, shipping). Supports SF Express delivery and in-store pickup — no third-party delivery platforms needed." data-zh="宠物鲜食电商微信小程序，包含顾客端（浏览/下单/支付）和商家管理端（商品管理/订单处理/发货）。商家通过顺丰快递发货或到店自提，无需第三方外卖平台。">A WeChat Mini Program for fresh pet food e-commerce. Includes customer storefront (browse, order, pay) and merchant dashboard (product management, order processing, shipping). Supports SF Express delivery and in-store pickup — no third-party delivery platforms needed.</p>
+        <div class="project-card__tech">
+          <span class="tag" data-en="WeChat Mini Program" data-zh="微信小程序">WeChat Mini Program</span>
+        </div>
+        <span class="project-card__link" style="color: var(--accent);" data-en="In Development" data-zh="开发中">In Development</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Contact -->
+  <section id="contact" class="contact">
+    <div class="section-label reveal" data-en="Contact" data-zh="联系我">Contact</div>
+    <h2 class="section-title reveal stagger-1" data-en="Let's build something <span class='accent'>together</span>" data-zh="让我们一起<span class='accent'>构建精彩</span>">Let's build something <span class="accent">together</span></h2>
+    <p class="contact__text reveal stagger-2" data-en="I'm always open to discussing new opportunities, interesting projects, or just having a chat about technology." data-zh="我随时欢迎讨论新机会、有趣的项目，或者单纯地聊聊技术。">I'm always open to discussing new opportunities, interesting projects, or just having a chat about technology.</p>
+    <div class="contact__links reveal stagger-3">
+      <a href="https://github.com/PetrGuan" class="contact-link" target="_blank">
+        <span>💻</span> GitHub
+      </a>
+      <a href="https://www.linkedin.com/in/petr-guan-17184698/" class="contact-link" target="_blank">
+        <span>💼</span> LinkedIn
+      </a>
+      <a href="mailto:guanjun_ksjs@outlook.com" class="contact-link">
+        <span>✉️</span> Email
+      </a>
+      <a href="https://apps.apple.com/us/app/bebilog-baby-tracker/id6759827652" class="contact-link" target="_blank">
+        <span>📱</span> Bebilog
+      </a>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <p data-en="Designed & built by Petr Guan · © 2026" data-zh="由 Petr Guan 设计与构建 · © 2026">Designed &amp; built by Petr Guan · © 2026</p>
+  </footer>
+
+  <script>
+    // Scroll reveal
+    const obs = new IntersectionObserver((entries) => {
+      entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+    }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+    document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+
+    // Smooth anchor scroll
+    document.querySelectorAll('a[href^="#"]').forEach(a => {
+      a.addEventListener('click', e => {
+        e.preventDefault();
+        const t = document.querySelector(a.getAttribute('href'));
+        if (t) t.scrollIntoView({ behavior: 'smooth' });
+      });
+    });
+
+    // Theme toggle
+    const themeBtn = document.getElementById('themeToggle');
+    function getSystemTheme() {
+      return window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+    }
+    function applyTheme(theme) {
+      if (theme === 'system') {
+        document.documentElement.removeAttribute('data-theme');
+        themeBtn.textContent = getSystemTheme() === 'light' ? '🌙' : '☀️';
+      } else {
+        document.documentElement.setAttribute('data-theme', theme);
+        themeBtn.textContent = theme === 'light' ? '🌙' : '☀️';
+      }
+    }
+    function toggleTheme() {
+      const current = document.documentElement.getAttribute('data-theme');
+      const effective = current || getSystemTheme();
+      const next = effective === 'dark' ? 'light' : 'dark';
+      applyTheme(next);
+      localStorage.setItem('theme', next);
+    }
+    // Init: check localStorage, then system
+    const saved = localStorage.getItem('theme');
+    if (saved) { applyTheme(saved); } else { applyTheme('system'); }
+    // Listen for system changes
+    window.matchMedia('(prefers-color-scheme: light)').addEventListener('change', () => {
+      if (!localStorage.getItem('theme')) applyTheme('system');
+    });
+
+    // Language toggle
+    let lang = 'en';
+    function toggleLang() {
+      lang = lang === 'en' ? 'zh' : 'en';
+      document.querySelectorAll('[data-en]').forEach(el => {
+        const text = el.getAttribute('data-' + lang);
+        if (text) el.innerHTML = text;
+      });
+    }
+  </script>
+</body>
+</html>
