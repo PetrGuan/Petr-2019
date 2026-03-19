@@ -642,7 +642,7 @@
     <p class="hero__greeting" data-en="Hello, I'm" data-zh="你好，我是">Hello, I'm</p>
     <h1 class="hero__name">Petr Guan</h1>
     <p class="hero__role" data-en="C++ Engineer @ Microsoft Outlook" data-zh="微软 Outlook · C++ 工程师">C++ Engineer @ Microsoft Outlook</p>
-    <p class="hero__desc" data-en="7 years at Microsoft building Outlook Mobile. Passionate about high-performance native apps, clean architecture, and crafting tools that people use every day." data-zh="在微软深耕 7 年，构建 Outlook Mobile。热衷于高性能原生应用、整洁架构，以及打造人们每天都在使用的工具。">7 years at Microsoft building Outlook Mobile. Passionate about high-performance native apps, clean architecture, and crafting tools that people use every day.</p>
+    <p class="hero__desc" data-en="{msYears} years at Microsoft building Outlook Mobile. Passionate about high-performance native apps, clean architecture, and crafting tools that people use every day." data-zh="在微软深耕 {msYears} 年，构建 Outlook Mobile。热衷于高性能原生应用、整洁架构，以及打造人们每天都在使用的工具。">{msYears} years at Microsoft building Outlook Mobile. Passionate about high-performance native apps, clean architecture, and crafting tools that people use every day.</p>
     <div class="hero__cta">
       <a href="#projects" class="btn btn--primary" data-en="View My Work" data-zh="查看作品">View My Work</a>
       <a href="#contact" class="btn btn--ghost" data-en="Get in Touch" data-zh="联系我">Get in Touch</a>
@@ -655,12 +655,12 @@
     <h2 class="section-title reveal stagger-1" data-en="Passionate about building <span class='accent'>elegant solutions</span>" data-zh="热衷于构建<span class='accent'>优雅的解决方案</span>">Passionate about building <span class="accent">elegant solutions</span></h2>
     <div class="about__content">
       <div class="about__text reveal stagger-2">
-        <p data-en="I'm a C++ engineer at Microsoft with 7 years of experience building Outlook Mobile — the email client used by millions every day. I specialize in high-performance native development and scalable architecture." data-zh="我是微软的一名 C++ 工程师，拥有 7 年经验，负责构建 Outlook Mobile — 每天被数百万人使用的邮件客户端。我专注于高性能原生开发和可扩展架构。">I'm a C++ engineer at Microsoft with 7 years of experience building Outlook Mobile — the email client used by millions every day. I specialize in high-performance native development and scalable architecture.</p>
+        <p data-en="I'm a C++ engineer at Microsoft with {msYears} years of experience building Outlook Mobile — the email client used by millions every day. I specialize in high-performance native development and scalable architecture." data-zh="我是微软的一名 C++ 工程师，拥有 {msYears} 年经验，负责构建 Outlook Mobile — 每天被数百万人使用的邮件客户端。我专注于高性能原生开发和可扩展架构。">I'm a C++ engineer at Microsoft with {msYears} years of experience building Outlook Mobile — the email client used by millions every day. I specialize in high-performance native development and scalable architecture.</p>
         <p data-en="Outside of work, I build indie apps — most recently Bebilog, a privacy-first baby tracker for iOS. I'm also passionate about compilers, design patterns, and exploring the fundamentals of computer science." data-zh="工作之余，我开发独立应用 — 最近上线了 Bebilog，一款注重隐私的 iOS 宝宝记录工具。我也热衷于编译器、设计模式和计算机科学基础。">Outside of work, I build indie apps — most recently Bebilog, a privacy-first baby tracker for iOS. I'm also passionate about compilers, design patterns, and exploring the fundamentals of computer science.</p>
       </div>
       <div class="about__stats">
         <div class="stat-card reveal stagger-3">
-          <div class="stat-card__number">8+</div>
+          <div class="stat-card__number" id="totalYears">8+</div>
           <div class="stat-card__label" data-en="Years Exp." data-zh="年经验">Years Exp.</div>
         </div>
         <div class="stat-card reveal stagger-4">
@@ -706,7 +706,7 @@
     <div class="timeline">
       <div class="timeline-item reveal stagger-2">
         <div class="timeline-item__dot"></div>
-        <span class="timeline-item__date" data-en="2018 — Present · 7 years" data-zh="2018 — 至今 · 7 年">2018 — Present · 7 years</span>
+        <span class="timeline-item__date" data-en="2018 — Present · {msYears} years" data-zh="2018 — 至今 · {msYears} 年">2018 — Present · {msYears} years</span>
         <div class="timeline-item__card">
           <h3 class="timeline-item__role" data-en="C++ Software Engineer" data-zh="C++ 软件工程师">C++ Software Engineer</h3>
           <p class="timeline-item__company">Microsoft — Outlook Mobile</p>
@@ -860,6 +860,18 @@
   </footer>
 
   <script>
+    // Dynamic years calculation
+    const msYears = new Date().getFullYear() - 2018;
+    const totalYears = new Date().getFullYear() - 2016;
+    document.querySelectorAll('[data-en], [data-zh]').forEach(el => {
+      ['data-en', 'data-zh'].forEach(attr => {
+        const v = el.getAttribute(attr);
+        if (v && v.includes('{msYears}')) el.setAttribute(attr, v.replace(/\{msYears\}/g, msYears));
+      });
+      el.innerHTML = el.innerHTML.replace(/\{msYears\}/g, msYears);
+    });
+    document.getElementById('totalYears').textContent = totalYears + '+';
+
     // Scroll reveal
     const obs = new IntersectionObserver((entries) => {
       entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
